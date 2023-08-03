@@ -19,7 +19,7 @@ What's more, **Neural** can also be used to conduct research in the field of neu
 use and flexibility of the library, developers can quickly create different architectures of neural networks and
 check their effectiveness in solving various problems.
 
-## Already present adn plans
+## Already present and plans
     
 1. [x] Multilayer Perceptron
 2. [x] **Four** activation functions

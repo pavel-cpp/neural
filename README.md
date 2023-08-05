@@ -43,10 +43,10 @@ check their effectiveness in solving various problems.
 
 #### Contacts
 
-[VK][1], [Telegramm][2], [Discord][3]
+[VK][1], [Telegram][2], [Discord][3]
 
 [1]: https://vk.com/pavel.cmake
 [2]: https://t.me/pavel_cpp
-[3]: @pavel.cpp
+[3]: https://discordapp.com/users/427479608321900545/
 [4]: https://cybersoft.ru/razrabotka/redaktory/208-qt.html
 [5]: https://cmake.org/

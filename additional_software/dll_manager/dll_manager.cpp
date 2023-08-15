@@ -20,14 +20,14 @@ PathList FindAllDLL(const fs::path& path){
 }
 
 std::string deleteFileName(const fs::path& path){
-    if(path.has_filename()){
+    if(path.has_filename() && !is_directory(path)){
         return path.parent_path().string();
     }
     return path.string();
 }
 
 void deleteFileName(fs::path& path){
-    if(path.has_filename()){
+    if(path.has_filename() && !is_directory(path)){
         path = path.parent_path();
     }
 }
@@ -38,24 +38,34 @@ bool IsCorrectPath(const std::string& path){
     std::regex expr(R"([A-Z]:\\((\w+\\)*))");
     std::smatch match;
     std::regex_search(path, match, expr);
-    return !match.empty() && match[0].str() == fixed_path;
+    return !match.empty();
 }
 
 void CopyDLLs(const fs::path& dest, const PathList& dlls){
     CLI::ProgressBar progress_bar(0, 0, dlls.size());
     for(const auto& file: dlls){
-        fs::copy_file(file, dest, fs::copy_options::overwrite_existing);
-            std::wcout << progress_bar.Next();
+        try {
+            fs::copy(file, dest, fs::copy_options::overwrite_existing);
+        }catch (...){
+            std::wcout << "From: " << file.wstring() << " To: " << dest.wstring() << std::endl;
+            system("pause");
+            exit(EXIT_SUCCESS);
+        }
+        std::wcout << progress_bar.Next();
     }
 }
 
 int main(int argc, char* argv[]){
-    /*if(argc != 2){
+    if(argc != 2){
         std::cerr << "Incorrect arguments!" << std::endl;
         system("pause");
         exit(EXIT_FAILURE);
-    }*/
+    }
 
+
+    for (int i = 0; i < argc; ++i) {
+        std::cout << i << " -> " << argv[i] << std::endl;
+    }
 
     fs::path source_path = deleteFileName(argv[0]);
     PathList files = FindAllDLL(source_path);
@@ -65,8 +75,7 @@ int main(int argc, char* argv[]){
         system("pause");
         exit(EXIT_FAILURE);
     }
-    fs::path destination_path = deleteFileName(argv[1]);
-
+    fs::path destination_path = deleteFileName(argv[1]) + "\\";
     std::wcout << "Neural DLL manager started!" << std::endl;
     std::wcout << "Copying..." << std::endl;
 

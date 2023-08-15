@@ -1,7 +1,9 @@
 #include <filesystem>
-#include <iostream>
-#include <vector>
 #include <regex>
+#include <vector>
+#include <iostream>
+
+#include "CLI/include/ProgressBar.h"
 
 namespace fs = std::filesystem;
 
@@ -10,7 +12,7 @@ typedef std::vector<fs::path> PathList;
 PathList FindAllDLL(const fs::path& path){
     PathList files;
     for(const auto& file : fs::directory_iterator(path)){
-        if(file.is_regular_file()){
+        if(file.is_regular_file() && file.path().string().back() == 'l'){
             files.push_back(file);
         }
     }
@@ -40,18 +42,20 @@ bool IsCorrectPath(const std::string& path){
 }
 
 void CopyDLLs(const fs::path& dest, const PathList& dlls){
+    CLI::ProgressBar progress_bar(0, 0, dlls.size());
     for(const auto& file: dlls){
         fs::copy_file(file, dest, fs::copy_options::overwrite_existing);
-        std::cout << file.filename() << " copied!";
+            std::wcout << progress_bar.Next();
     }
 }
 
 int main(int argc, char* argv[]){
-    if(argc > 2){
-        std::cerr << "Too many arguments!" << std::endl;
+    /*if(argc != 2){
+        std::cerr << "Incorrect arguments!" << std::endl;
         system("pause");
         exit(EXIT_FAILURE);
-    }
+    }*/
+
 
     fs::path source_path = deleteFileName(argv[0]);
     PathList files = FindAllDLL(source_path);
@@ -63,7 +67,13 @@ int main(int argc, char* argv[]){
     }
     fs::path destination_path = deleteFileName(argv[1]);
 
-    std::cout << "Neural DLL loader started!" << std::endl;
+    std::wcout << "Neural DLL manager started!" << std::endl;
+    std::wcout << "Copying..." << std::endl;
+
+    CopyDLLs(destination_path, files);
+
+    std::wcout << std::endl;
 
     system("pause");
+
 }

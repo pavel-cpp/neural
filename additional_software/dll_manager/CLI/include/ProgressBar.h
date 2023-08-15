@@ -1,13 +1,11 @@
-#ifndef NEURALDLLMANAGER_PROGRESSBARCLI_H
-#define NEURALDLLMANAGER_PROGRESSBARCLI_H
+#ifndef NEURALDLLMANAGER_PROGRESSBAR_H
+#define NEURALDLLMANAGER_PROGRESSBAR_H
 
 #include <fcntl.h>
 #include <io.h>
 #include <iostream>
 
 namespace CLI {
-
-    const wchar_t NULL_CHAR = 0;
 
     class ProgressBar {
     public:
@@ -19,7 +17,7 @@ namespace CLI {
 
         virtual ~ProgressBar();
 
-        wchar_t Next();
+        std::wstring Next();
 
         void Restart();
 
@@ -36,4 +34,4 @@ namespace CLI {
 
 }
 
-#endif //NEURALDLLMANAGER_PROGRESSBARCLI_H
+#endif //NEURALDLLMANAGER_PROGRESSBAR_H

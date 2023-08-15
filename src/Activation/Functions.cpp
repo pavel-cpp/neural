@@ -1,4 +1,4 @@
-#include <Neural/Activation/Functions.h>
+#include <Neural/Activation/Functions.hpp>
 
 double Neural::sigmoid(double arg){
     return 1 / (1 + exp(-arg));

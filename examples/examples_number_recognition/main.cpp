@@ -8,7 +8,7 @@
 #include <SFML/Graphics.hpp>
 
 #include <Neural/Perceptron.hpp>
-#include <Neural/Activation/Functions.h>
+#include <Neural/Activation/Functions.hpp>
 
 using namespace sf;
 using namespace std;

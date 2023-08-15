@@ -1,4 +1,4 @@
-#include "../../include/Neural/Perceptron/Layer.h"
+#include <Neural/Perceptron/Layer.hpp>
 
 using namespace Neural;
 

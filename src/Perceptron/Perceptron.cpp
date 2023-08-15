@@ -26,7 +26,7 @@ Perceptron::Perceptron(const std::vector<unsigned>& layer, double (*function)(do
     for (int l = 0; l < layers.size(); ++l) {
         for (int i = 0; i < layers[l].size; ++i) {
             for (int j = 0; j < layers[l].weights[i].size(); ++j) {
-                layers[l].weights[i][j] = ((rand() % 10000 + 1.f) / 10000.f) * 4.f - 2.f;
+                layers[l].weights[i][j] = ((rand() % 10000 + 1.f) / 10000.f) * 4.f - 2.f; // TODO: Добавить функции рандома
             }
         }
     }
@@ -110,8 +110,6 @@ void Perceptron::backPropagation(const Neurons &target) {
         }
     }
 }
-
-
 
 Perceptron::~Perceptron() = default;
 

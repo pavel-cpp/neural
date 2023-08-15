@@ -4,7 +4,7 @@
 #include <cmath>
 #include <fstream>
 
-#include "Layer.h"
+#include "Layer.hpp"
 
 namespace Neural {
 
@@ -24,9 +24,9 @@ namespace Neural {
 
     public:
 
-        ~Perceptron();
+        virtual ~Perceptron();
 
-        Perceptron(const std::vector<unsigned> &layer, double (*function)(double));
+        explicit Perceptron(const std::vector<unsigned> &layer, double (*function)(double));
 
         Perceptron(const Perceptron &copy);
 
@@ -50,7 +50,7 @@ namespace Neural {
 
         Neurons forwardFeed();
 
-        Neurons forwardFeed(const std::vector<double>& input);
+        Neurons forwardFeed(const Neurons& input);
 
         void backPropagation(const Neurons &target);
 

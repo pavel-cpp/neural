@@ -2,7 +2,6 @@
 #include <iostream>
 #include <vector>
 #include <regex>
-#include <cstring>
 
 namespace fs = std::filesystem;
 
@@ -11,7 +10,9 @@ typedef std::vector<fs::path> PathList;
 PathList FindAllDLL(const fs::path& path){
     PathList files;
     for(const auto& file : fs::directory_iterator(path)){
-        files.push_back(file);
+        if(file.is_regular_file()){
+            files.push_back(file);
+        }
     }
     return files;
 }
@@ -38,8 +39,11 @@ bool IsCorrectPath(const std::string& path){
     return match.size() && match[0].str() == fixed_path;
 }
 
-bool CopyDLLs(const fs::path& dest, const std::vector<fs::path>& src){
-
+void CopyDLLs(const fs::path& dest, const PathList& dlls){
+    for(const auto& file: dlls){
+        fs::copy_file(file, dest, fs::copy_options::overwrite_existing);
+        std::cout << file.filename() << " copied!";
+    }
 }
 
 int main(int argc, char* argv[]){
@@ -58,4 +62,8 @@ int main(int argc, char* argv[]){
         exit(EXIT_FAILURE);
     }
     fs::path destination_path = deleteFileName(argv[1]);
+
+    std::cout << "Neural DLL loader started!" << std::endl;
+
+    system("pause");
 }

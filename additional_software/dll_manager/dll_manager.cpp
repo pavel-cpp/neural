@@ -38,6 +38,7 @@ bool IsCorrectPath(const std::string& path){
     std::regex expr(R"([A-Z]:\\((\w+\\)*))");
     std::smatch match;
     std::regex_search(path, match, expr);
+    std::cout << match[0].str() << " -> " << fixed_path << std::endl;
     return !match.empty() && match[0].str() == fixed_path;
 }
 

@@ -36,7 +36,7 @@ bool IsCorrectPath(const std::string& path){
     std::regex expr(R"([A-Z]:\\((\w+\\)*))");
     std::smatch match;
     std::regex_search(path, match, expr);
-    return match.size() && match[0].str() == fixed_path;
+    return !match.empty() && match[0].str() == fixed_path;
 }
 
 void CopyDLLs(const fs::path& dest, const PathList& dlls){

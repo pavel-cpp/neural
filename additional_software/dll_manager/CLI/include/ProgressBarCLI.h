@@ -3,33 +3,35 @@
 
 #include <fcntl.h>
 #include <io.h>
+#include <iostream>
 
 namespace CLI {
+
+    const wchar_t NULL_CHAR = 0;
 
     class ProgressBar {
     public:
         ProgressBar();
 
-        ProgressBar(int start, int current, int anEnd);
+        ProgressBar(int start, int current, int end);
 
         ProgressBar(const ProgressBar& copy);
 
         virtual ~ProgressBar();
 
-        int Next();
+        wchar_t Next();
 
-        int Restart();
-
-        int GetStart() const;
+        void Restart();
 
         void SetStart(int start);
-
-        int SetStart() const;
 
         void SetEnd(int end);
 
     private:
+
         int start_, current_, end_;
+
+        int ComputePercentage() const;
     };
 
 }

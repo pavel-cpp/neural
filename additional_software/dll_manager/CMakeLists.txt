@@ -7,6 +7,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_CXX_FLAGS "-static")
 
-add_executable(${PROJECT_NAME} dll_manager.cpp
-        ProgressBarCLI.cpp
-        ProgressBarCLI.h)
+add_executable(
+        ${PROJECT_NAME}
+        dll_manager.cpp
+        CLI/src/ProgressBarCLI.cpp
+        CLI/include/ProgressBarCLI.h
+)

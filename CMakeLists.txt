@@ -16,7 +16,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY lib)
 # Definition of the main goal
 add_library(${PROJECT_NAME}_Functions SHARED
         src/Activation/Functions.cpp
-        )
+        additional_software/dll_manager/dll_manager.cpp
+)
 
 add_library(${PROJECT_NAME}_Perceptron SHARED
         src/Perceptron/Perceptron.cpp

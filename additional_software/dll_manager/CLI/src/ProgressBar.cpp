@@ -30,9 +30,9 @@ namespace CLI {
     std::wstring ProgressBar::Next(wchar_t ch) {
         if (current_ > end_) return {};
         ++current_;
-        int print_cnt = (DELIMITER_COUNT_ - completed_ ) * ComputePercentage() ;
-        if(print_cnt < 0) print_cnt = 0;
-        completed_ += (DELIMITER_COUNT_ - completed_ ) * ComputePercentage();
+        int print_cnt = (DELIMITER_COUNT_ - completed_) * ComputePercentage();
+        if (print_cnt < 0) print_cnt = 0;
+        completed_ += (DELIMITER_COUNT_ - completed_) * ComputePercentage();
         return std::wstring(print_cnt, ch);
     }
 

@@ -26,12 +26,6 @@ std::string GetDirectory(const fs::path &path) {
     return path.string();
 }
 
-void deleteFileName(fs::path &path) {
-    if (path.has_filename() && !is_directory(path)) {
-        path = path.parent_path();
-    }
-}
-
 bool IsCorrectPath(const std::string &path) {
     std::string fixed_path = GetDirectory(path);
     fixed_path += '\\';

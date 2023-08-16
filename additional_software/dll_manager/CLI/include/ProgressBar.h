@@ -15,7 +15,7 @@ namespace CLI {
 
         ProgressBar(int start, int end);
 
-        ProgressBar(const ProgressBar& copy);
+        ProgressBar(const ProgressBar &copy);
 
         virtual ~ProgressBar();
 

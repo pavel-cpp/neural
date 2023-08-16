@@ -24,7 +24,9 @@ namespace CLI {
 
     std::wstring ProgressBar::Next() {
             ++current_;
-            return std::wstring(ComputePercentage() / 8, L'\x2588');
+            int char_cnt = ComputePercentage() / 8;
+            if(char_cnt == 0) char_cnt = 1;
+            return std::wstring(char_cnt, L'\x2588');
     }
 
     int ProgressBar::ComputePercentage() const {

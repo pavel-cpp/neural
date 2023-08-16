@@ -9,17 +9,17 @@ namespace fs = std::filesystem;
 
 typedef std::vector<fs::path> PathList;
 
-PathList FindAllDLL(const fs::path& path){
+PathList GetFiles(const fs::path& path, const std::string& extension){
     PathList files;
     for(const auto& file : fs::directory_iterator(path)){
-        if(file.is_regular_file() && file.path().string().back() == 'l'){
+        if(file.path().extension() == extension){
             files.push_back(file);
         }
     }
     return files;
 }
 
-std::string deleteFileName(const fs::path& path){
+std::string GetDirectory(const fs::path& path){
     if(path.has_filename() && !is_directory(path)){
         return path.parent_path().string();
     }
@@ -33,7 +33,7 @@ void deleteFileName(fs::path& path){
 }
 
 bool IsCorrectPath(const std::string& path){
-    std::string fixed_path = deleteFileName(path);
+    std::string fixed_path = GetDirectory(path);
     fixed_path += '\\';
     std::regex expr(R"([A-Z]:\\((\w+\\)*))");
     std::smatch match;
@@ -45,7 +45,7 @@ void CopyDLLs(const fs::path& dest, const PathList& dlls){
     CLI::ProgressBar progress_bar(0, 0, dlls.size());
     for(const auto& file: dlls){
         try {
-            fs::copy(file, dest, fs::copy_options::overwrite_existing);
+            fs::copy(file, dest.string() + "\\" + file.filename().string(), fs::copy_options::overwrite_existing);
         }catch (...){
             std::wcout << "From: " << file.wstring() << " To: " << dest.wstring() << std::endl;
             system("pause");
@@ -67,15 +67,15 @@ int main(int argc, char* argv[]){
         std::cout << i << " -> " << argv[i] << std::endl;
     }
 
-    fs::path source_path = deleteFileName(argv[0]);
-    PathList files = FindAllDLL(source_path);
+    fs::path source_path = GetDirectory(argv[0]);
+    PathList files = GetFiles(source_path, ".dll");
 
     if(!IsCorrectPath(argv[1])) {
         std::cerr << "Incorrect Path!" << std::endl;
         system("pause");
         exit(EXIT_FAILURE);
     }
-    fs::path destination_path = deleteFileName(argv[1]) + "\\";
+    fs::path destination_path = GetDirectory(argv[1]);
     std::wcout << "Neural DLL manager started!" << std::endl;
     std::wcout << "Copying..." << std::endl;
 

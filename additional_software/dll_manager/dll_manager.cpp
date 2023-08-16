@@ -9,30 +9,30 @@ namespace fs = std::filesystem;
 
 typedef std::vector<fs::path> PathList;
 
-PathList GetFiles(const fs::path& path, const std::string& extension){
+PathList GetFiles(const fs::path &path, const std::string &extension) {
     PathList files;
-    for(const auto& file : fs::directory_iterator(path)){
-        if(file.path().extension() == extension){
+    for (const auto &file: fs::directory_iterator(path)) {
+        if (file.path().extension() == extension) {
             files.push_back(file);
         }
     }
     return files;
 }
 
-std::string GetDirectory(const fs::path& path){
-    if(path.has_filename() && !is_directory(path)){
+std::string GetDirectory(const fs::path &path) {
+    if (path.has_filename() && !is_directory(path)) {
         return path.parent_path().string();
     }
     return path.string();
 }
 
-void deleteFileName(fs::path& path){
-    if(path.has_filename() && !is_directory(path)){
+void deleteFileName(fs::path &path) {
+    if (path.has_filename() && !is_directory(path)) {
         path = path.parent_path();
     }
 }
 
-bool IsCorrectPath(const std::string& path){
+bool IsCorrectPath(const std::string &path) {
     std::string fixed_path = GetDirectory(path);
     fixed_path += '\\';
     std::regex expr(R"([A-Z]:\\((\w+\\)*))");
@@ -41,22 +41,23 @@ bool IsCorrectPath(const std::string& path){
     return !match.empty();
 }
 
-void CopyDLLs(const fs::path& dest, const PathList& dlls){
-    CLI::ProgressBar progress_bar(0, 0, dlls.size());
-    for(const auto& file: dlls){
+void CopyDLLs(const fs::path &dest, const PathList &dlls) {
+    CLI::ProgressBar progress_bar(0, dlls.size());
+    for (const auto &file: dlls) {
         try {
             fs::copy(file, dest.string() + "\\" + file.filename().string(), fs::copy_options::overwrite_existing);
-        }catch (...){
-            std::wcout << "From: " << file.wstring() << " To: " << dest.wstring() << std::endl;
-            system("pause");
-            exit(EXIT_SUCCESS);
+        } catch (...) {
+            std::wcout << progress_bar.Next(L'\x2593');
+            Sleep(100);
+            continue;
         }
         std::wcout << progress_bar.Next();
+        Sleep(100);
     }
 }
 
-int main(int argc, char* argv[]){
-    if(argc != 2){
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
         std::cerr << "Incorrect arguments!" << std::endl;
         system("pause");
         exit(EXIT_FAILURE);
@@ -70,7 +71,7 @@ int main(int argc, char* argv[]){
     fs::path source_path = GetDirectory(argv[0]);
     PathList files = GetFiles(source_path, ".dll");
 
-    if(!IsCorrectPath(argv[1])) {
+    if (!IsCorrectPath(argv[1])) {
         std::cerr << "Incorrect Path!" << std::endl;
         system("pause");
         exit(EXIT_FAILURE);

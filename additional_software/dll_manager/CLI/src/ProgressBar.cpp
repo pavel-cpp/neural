@@ -1,11 +1,11 @@
 #include "../include/ProgressBar.h"
 
 namespace CLI {
-    ProgressBar::ProgressBar() : start_(0), current_(0), end_(0){
+    ProgressBar::ProgressBar() : start_(0), current_(0), end_(0) {
         _setmode(_fileno(stdout), _O_U16TEXT);
     }
 
-    ProgressBar::ProgressBar(int start, int current, int end) : start_(start), current_(current_), end_(end) {
+    ProgressBar::ProgressBar(int start, int end) : start_(start), current_(0), end_(end) {
         _setmode(_fileno(stdout), _O_U16TEXT);
     }
 
@@ -20,17 +20,24 @@ namespace CLI {
 
     void ProgressBar::SetEnd(int end) {
         end_ = end;
+        current_ = 0;
     }
 
     std::wstring ProgressBar::Next() {
-            ++current_;
-            int char_cnt = ComputePercentage() / 8;
-            if(char_cnt == 0) char_cnt = 1;
-            return std::wstring(char_cnt, L'\x2588');
+        return Next(L'\x2588');
     }
 
-    int ProgressBar::ComputePercentage() const {
-        return static_cast<int>((static_cast<double>(current_) / (end_ - start_)) * 100);
+    std::wstring ProgressBar::Next(wchar_t ch) {
+        if (current_ > end_) return {};
+        ++current_;
+        int print_cnt = (DELIMITER_COUNT_ - completed_ ) * ComputePercentage() ;
+        if(print_cnt < 0) print_cnt = 0;
+        completed_ += (DELIMITER_COUNT_ - completed_ ) * ComputePercentage();
+        return std::wstring(print_cnt, ch);
+    }
+
+    double ProgressBar::ComputePercentage() const {
+        return static_cast<double>(current_) / (end_ - start_);
     }
 
     void ProgressBar::Restart() {

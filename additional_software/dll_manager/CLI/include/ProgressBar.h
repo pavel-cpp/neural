@@ -4,6 +4,8 @@
 #include <fcntl.h>
 #include <io.h>
 #include <iostream>
+#include <limits>
+#include <windows.h>
 
 namespace CLI {
 
@@ -11,13 +13,16 @@ namespace CLI {
     public:
         ProgressBar();
 
-        ProgressBar(int start, int current, int end);
+        ProgressBar(int start, int end);
 
         ProgressBar(const ProgressBar& copy);
 
         virtual ~ProgressBar();
 
         std::wstring Next();
+
+        //TODO: FIX: Incorrect char count
+        std::wstring Next(wchar_t ch);
 
         void Restart();
 
@@ -29,7 +34,11 @@ namespace CLI {
 
         int start_, current_, end_;
 
-        int ComputePercentage() const;
+        double completed_;
+
+        const float DELIMITER_COUNT_ = 25.f;
+
+        double ComputePercentage() const;
     };
 
 }

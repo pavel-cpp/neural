@@ -18,53 +18,57 @@ using std::unique_ptr;
 
 typedef vector<fs::path> PathList;
 
-// [Experimental] Function to execute a shell command and return the result
-string ExecuteShellCommand(const string& command)
+vector<wstring> GetDependentDlls(const wstring& exeFilePath)
 {
-    array<char, 128> buffer;
-    string result;
-    unique_ptr<FILE, decltype(&pclose)> pipe(popen(command.c_str(), "r"), pclose);
-    if (!pipe)
+    std::vector<std::wstring> requiredDlls;
+
+    HANDLE hFile = CreateFileW(exeFilePath.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr);
+    if (hFile != INVALID_HANDLE_VALUE)
     {
-        throw std::runtime_error("popen() failed!");
-    }
-    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
-    {
-        result += buffer.data();
-    }
-    return result;
-}
-
-// [Experimental] Function to get a list of dependent modules for a given EXE file
-vector<string> GetDependentDlls(const string& exePath)
-{
-    vector<string> dependentDlls;
-
-    string command = "dumpbin /dependents \"" + exePath + "\"";
-    string output = ExecuteShellCommand(command);
-
-    size_t startPos = output.find("Image has the following dependencies:");
-    if (startPos != string::npos)
-    {
-        output = output.substr(startPos + strlen("Image has the following dependencies:"));
-
-        size_t endPos = output.find("\n");
-        if (endPos != string::npos)
+        HANDLE hMapping = CreateFileMappingW(hFile, nullptr, PAGE_READONLY | SEC_IMAGE, 0, 0, nullptr);
+        if (hMapping != INVALID_HANDLE_VALUE)
         {
-            output = output.substr(0, endPos);
-
-            size_t pos = 0;
-            string delimiter = "\n";
-            while ((pos = output.find(delimiter)) != string::npos)
+            BYTE* pBaseAddress = static_cast<BYTE*>(MapViewOfFile(hMapping, FILE_MAP_READ, 0, 0, 0));
+            if (pBaseAddress != nullptr)
             {
-                string dllName = output.substr(0, pos);
-                dependentDlls.push_back(dllName);
-                output.erase(0, pos + delimiter.length());
+                IMAGE_DOS_HEADER* pDosHeader = reinterpret_cast<IMAGE_DOS_HEADER*>(pBaseAddress);
+                IMAGE_NT_HEADERS* pNtHeaders = reinterpret_cast<IMAGE_NT_HEADERS*>(pBaseAddress + pDosHeader->e_lfanew);
+
+                IMAGE_DATA_DIRECTORY* pImportDir = &(pNtHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT]);
+                IMAGE_IMPORT_DESCRIPTOR* pImportDesc = reinterpret_cast<IMAGE_IMPORT_DESCRIPTOR*>(pBaseAddress + pImportDir->VirtualAddress);
+
+                while (pImportDesc->Name != 0)
+                {
+                    LPCSTR lpModuleName = reinterpret_cast<LPCSTR>(pBaseAddress + pImportDesc->Name);
+                    std::wstring moduleName = std::wstring(lpModuleName, lpModuleName + strlen(lpModuleName));
+
+                    requiredDlls.push_back(moduleName);
+
+                    pImportDesc++;
+                }
+
+                UnmapViewOfFile(pBaseAddress);
             }
+            else
+            {
+                std::cout << "Failed to map view of file" << std::endl;
+            }
+
+            CloseHandle(hMapping);
         }
+        else
+        {
+            std::cout << "Failed to create file mapping" << std::endl;
+        }
+
+        CloseHandle(hFile);
+    }
+    else
+    {
+        std::cout << "Failed to open file" << std::endl;
     }
 
-    return dependentDlls;
+    return requiredDlls;
 }
 
 PathList GetFiles(const fs::path &path, const string &extension) {
@@ -122,6 +126,15 @@ int main(int argc, char *argv[]) {
         std::cerr << "Incorrect Path!" << endl;
         system("pause");
         exit(EXIT_FAILURE);
+    }
+
+    {
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        vector<wstring> dependents = GetDependentDlls(converter.from_bytes(argv[1]));
+
+        for (const wstring &str: dependents) {
+            wcout << str << endl;
+        }
     }
 
     fs::path destination_path = GetDirectory(argv[1]);

@@ -11,5 +11,7 @@ add_executable(
         ${PROJECT_NAME}
         dll_manager.cpp
         CLI/src/ProgressBar.cpp
-        CLI/include/ProgressBar.h
+        CLI/include/ProgressBar.hpp
+        filesystem_interface.cpp
+        filesystem_interface.hpp
 )

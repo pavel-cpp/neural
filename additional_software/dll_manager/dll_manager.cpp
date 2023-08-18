@@ -1,4 +1,3 @@
-#include <array>
 #include <filesystem>
 #include <regex>
 #include <vector>
@@ -9,66 +8,75 @@
 namespace fs = std::filesystem;
 
 using std::wcout;
+using std::cout;
+using std::cerr;
+using std::smatch;
+using std::regex;
 using std::endl;
 using std::wstring;
 using std::string;
 using std::vector;
-using std::array;
-using std::unique_ptr;
+
 
 typedef vector<fs::path> PathList;
 
-vector<wstring> GetDependentDlls(const wstring& exeFilePath)
+inline bool CheckModuleName(const string& module_name){
+    return module_name.find("Neural") != string::npos;
+}
+
+vector<string> GetDependentDlls(const wstring& executable_file_path)
 {
-    std::vector<std::wstring> requiredDlls;
+    vector<string> dependent_dlls;
 
-    HANDLE hFile = CreateFileW(exeFilePath.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr);
-    if (hFile != INVALID_HANDLE_VALUE)
+    HANDLE file_handle = CreateFileW(executable_file_path.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, 0, nullptr);
+    if (file_handle != INVALID_HANDLE_VALUE)
     {
-        HANDLE hMapping = CreateFileMappingW(hFile, nullptr, PAGE_READONLY | SEC_IMAGE, 0, 0, nullptr);
-        if (hMapping != INVALID_HANDLE_VALUE)
+        HANDLE mapping_handler = CreateFileMappingW(file_handle, nullptr, PAGE_READONLY | SEC_IMAGE, 0, 0, nullptr);
+        if (mapping_handler != INVALID_HANDLE_VALUE)
         {
-            BYTE* pBaseAddress = static_cast<BYTE*>(MapViewOfFile(hMapping, FILE_MAP_READ, 0, 0, 0));
-            if (pBaseAddress != nullptr)
+            BYTE* base_address = static_cast<BYTE*>(MapViewOfFile(mapping_handler, FILE_MAP_READ, 0, 0, 0));
+            if (base_address != nullptr)
             {
-                IMAGE_DOS_HEADER* pDosHeader = reinterpret_cast<IMAGE_DOS_HEADER*>(pBaseAddress);
-                IMAGE_NT_HEADERS* pNtHeaders = reinterpret_cast<IMAGE_NT_HEADERS*>(pBaseAddress + pDosHeader->e_lfanew);
+                IMAGE_DOS_HEADER* dos_header = reinterpret_cast<IMAGE_DOS_HEADER*>(base_address);
+                IMAGE_NT_HEADERS* nt_headers = reinterpret_cast<IMAGE_NT_HEADERS*>(base_address + dos_header->e_lfanew);
 
-                IMAGE_DATA_DIRECTORY* pImportDir = &(pNtHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT]);
-                IMAGE_IMPORT_DESCRIPTOR* pImportDesc = reinterpret_cast<IMAGE_IMPORT_DESCRIPTOR*>(pBaseAddress + pImportDir->VirtualAddress);
+                IMAGE_DATA_DIRECTORY* import_dir = &(nt_headers->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT]);
+                IMAGE_IMPORT_DESCRIPTOR* import_desc = reinterpret_cast<IMAGE_IMPORT_DESCRIPTOR*>(base_address + import_dir->VirtualAddress);
 
-                while (pImportDesc->Name != 0)
+                while (import_desc->Name != 0)
                 {
-                    LPCSTR lpModuleName = reinterpret_cast<LPCSTR>(pBaseAddress + pImportDesc->Name);
-                    std::wstring moduleName = std::wstring(lpModuleName, lpModuleName + strlen(lpModuleName));
+                    LPCSTR lp_module_name = reinterpret_cast<LPCSTR>(base_address + import_desc->Name);
+                    string module_name = string(lp_module_name, lp_module_name + strlen(lp_module_name));
 
-                    requiredDlls.push_back(moduleName);
+                    if(CheckModuleName(module_name)) {
+                        dependent_dlls.push_back(module_name);
+                    }
 
-                    pImportDesc++;
+                    import_desc++;
                 }
 
-                UnmapViewOfFile(pBaseAddress);
+                UnmapViewOfFile(base_address);
             }
             else
             {
-                std::cout << "Failed to map view of file" << std::endl;
+                cout << "Failed to map view of file" << endl;
             }
 
-            CloseHandle(hMapping);
+            CloseHandle(mapping_handler);
         }
         else
         {
-            std::cout << "Failed to create file mapping" << std::endl;
+            cout << "Failed to create file mapping" << endl;
         }
 
-        CloseHandle(hFile);
+        CloseHandle(file_handle);
     }
     else
     {
-        std::cout << "Failed to open file" << std::endl;
+        cout << "Failed to open file" << endl;
     }
 
-    return requiredDlls;
+    return dependent_dlls;
 }
 
 PathList GetFiles(const fs::path &path, const string &extension) {
@@ -91,9 +99,9 @@ string GetDirectory(const fs::path &path) {
 bool IsCorrectPath(const string &path) {
     string fixed_path = GetDirectory(path);
     fixed_path += '\\';
-    std::regex expr(R"([A-Z]:\\((\w+\\)*))");
-    std::smatch match;
-    std::regex_search(path, match, expr);
+    regex expr(R"([A-Z]:\\((\w+\\)*))");
+    smatch match;
+    regex_search(path, match, expr);
     return !match.empty();
 }
 
@@ -103,18 +111,18 @@ void CopyDLLs(const fs::path &dest, const PathList &dlls) {
         try {
             fs::copy(file, dest.string() + "\\" + file.filename().string(), fs::copy_options::overwrite_existing);
         } catch (...) {
-            std::wcout << progress_bar.Next(L'\x2593');
+            wcout << progress_bar.Next(L'\x2593');
             Sleep(100);
             continue;
         }
-        std::wcout << progress_bar.Next();
+        wcout << progress_bar.Next();
         Sleep(100);
     }
 }
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
-        std::cerr << "Incorrect arguments!" << endl;
+        cerr << "Incorrect arguments!" << endl;
         system("pause");
         exit(EXIT_FAILURE);
     }
@@ -123,23 +131,26 @@ int main(int argc, char *argv[]) {
     PathList files = GetFiles(source_path, ".dll");
 
     if (!IsCorrectPath(argv[1])) {
-        std::cerr << "Incorrect Path!" << endl;
+        cerr << "Incorrect Path!" << endl;
         system("pause");
         exit(EXIT_FAILURE);
     }
 
+    fs::path destination_path = GetDirectory(argv[1]);
+    wcout << L"[Experimental] Neural DLL manager started!" << endl;
+    wcout << L"Checking dependents..." << endl;
+
+    vector<string> dependents;
     {
         std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-        vector<wstring> dependents = GetDependentDlls(converter.from_bytes(argv[1]));
+        dependents = GetDependentDlls(converter.from_bytes(argv[1]));
 
-        for (const wstring &str: dependents) {
-            wcout << str << endl;
+        for (const string &str: dependents) {
+            cout << str << endl;
         }
     }
 
-    fs::path destination_path = GetDirectory(argv[1]);
-    wcout << "[Experimental] Neural DLL manager started!" << endl;
-    wcout << "Copying..." << endl;
+    wcout << L"Copying..." << endl;
 
     CopyDLLs(destination_path, files);
 

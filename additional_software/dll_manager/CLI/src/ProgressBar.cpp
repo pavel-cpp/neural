@@ -1,4 +1,4 @@
-#include "../include/ProgressBar.h"
+#include "../include/ProgressBar.hpp"
 
 namespace CLI {
     ProgressBar::ProgressBar() : start_(0), current_(0), end_(0) {

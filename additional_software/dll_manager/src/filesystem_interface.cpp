@@ -1,4 +1,4 @@
-#include "filesystem_interface.hpp"
+#include "../include/filesystem_interface.hpp"
 
 string GetDirectory(const fs::path &path) {
     if (path.has_filename() && !is_directory(path)) {
@@ -20,7 +20,7 @@ bool IsDependent(const string &path, const Dependents &dependents) {
     });
 }
 
-void CopyDLLs(const fs::path &dest, const Paths &dlls, const Dependents &dependents, CLI_IO_OPTIONS io_param = CLI_IO_OPTIONS::CLI_ON) {
+void CopyDLLs(const fs::path &dest, const Paths &dlls, const Dependents &dependents, CLI_IO_OPTIONS io_param) {
     CLI::ProgressBar progress_bar(0, static_cast<int>(dlls.size()));
     for (const auto &file: dlls) {
         if (!IsDependent(file.string(), dependents)) continue;

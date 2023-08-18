@@ -12,6 +12,8 @@ add_executable(
         dll_manager.cpp
         CLI/src/ProgressBar.cpp
         CLI/include/ProgressBar.hpp
-        filesystem_interface.cpp
-        filesystem_interface.hpp
+        src/filesystem_interface.cpp
+        include/filesystem_interface.hpp
+        src/dependents_checker.cpp
+        include/dependents_checker.hpp
 )

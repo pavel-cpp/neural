@@ -23,11 +23,12 @@ check their effectiveness in solving various problems.
     
 1. [x] Multilayer Perceptron
 2. [x] **Four** activation functions
-3. [ ] Multithreading
-4. [ ] GPU multithreading
-5. [ ] Documentation
-6. [ ] Cross-platform
-7. [ ] More models
+3. [x] Auto fetching dependent DLLs (_Experimental_)
+4. [ ] Multithreading
+5. [ ] GPU multithreading
+6. [ ] Documentation
+7. [ ] Cross-platform
+8. [ ] More models
 
 ## Quick start
 

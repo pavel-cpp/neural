@@ -1,4 +1,4 @@
-<img src="icon.png" alt="icon" width="200"/>
+<img src="https://i.imgur.com/kevoEVb.png" alt="icon" width="200"/>
 
 # Neural 
 ###### ver 1.0.0
@@ -29,6 +29,12 @@ check their effectiveness in solving various problems.
 6. [ ] Documentation
 7. [ ] Cross-platform
 8. [ ] More models
+
+## Example
+
+
+<img src="https://i.imgur.com/Z7o4bwj.gif" alt="example" width="500"/>
+
 
 ## Quick start
 

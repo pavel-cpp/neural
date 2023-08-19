@@ -55,15 +55,15 @@ add_library(Neural_Functions SHARED IMPORTED)
 # Import target "Neural_Perceptron" for configuration "Release"
 set_property(TARGET Neural_Perceptron APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(Neural_Perceptron PROPERTIES
-  IMPORTED_IMPLIB_RELEASE "../../libNeural_Perceptron.dll.a"
-  IMPORTED_LOCATION_RELEASE "../Neural_Perceptron.dll"
+  IMPORTED_IMPLIB_RELEASE "../libNeural_Perceptron.dll.a"
+  IMPORTED_LOCATION_RELEASE "../lib/Neural_Perceptron.dll"
   )
 
 # Import target "Neural_Functions" for configuration "Release"
 set_property(TARGET Neural_Functions APPEND PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
 set_target_properties(Neural_Functions PROPERTIES
-  IMPORTED_IMPLIB_RELEASE "../../libNeural_Functions.dll.a"
-  IMPORTED_LOCATION_RELEASE "../Neural_Functions.dll"
+  IMPORTED_IMPLIB_RELEASE "../libNeural_Functions.dll.a"
+  IMPORTED_LOCATION_RELEASE "../lib/Neural_Functions.dll"
   )
 
 # This file does not depend on other imported targets which have

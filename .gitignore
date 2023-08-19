@@ -1,4 +1,22 @@
-cmake-build-debug/
-cmake-build-release/
+# Build directories
+build/
+cmake-build-*/
+
+# IDE Folders
 .idea/
-test_build/
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app

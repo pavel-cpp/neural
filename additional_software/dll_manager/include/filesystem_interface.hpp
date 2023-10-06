@@ -2,9 +2,9 @@
 #define NEURALDLLMANAGER_FILESYSTEM_INTERFACE_HPP
 
 #include <filesystem>
+#include <iostream>
 #include <regex>
 #include <vector>
-#include <iostream>
 
 #include "../CLI/include/ProgressBar.hpp"
 

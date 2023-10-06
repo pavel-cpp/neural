@@ -42,11 +42,11 @@ namespace Neural {
 
         Neurons operator[](const size_t &arg);
 
-        std::vector<Layer> getSource();
+        [[nodiscard]] const std::vector<Layer>& getSource() const noexcept;
 
-        bool setSource(const std::vector<Layer> &layers);
+        void setSource(const std::vector<Layer> &layers);
 
-        size_t size();
+        size_t size() const noexcept;
 
         Neurons forwardFeed();
 

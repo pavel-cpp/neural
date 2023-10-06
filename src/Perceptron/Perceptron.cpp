@@ -187,17 +187,16 @@ Neurons Perceptron::getLayer(const size_t& arg) {
     return layers[arg].neurons;
 }
 
-size_t Perceptron::size() {
+size_t Perceptron::size() const noexcept {
     return layers.size();
 }
 
-std::vector<Layer> Perceptron::getSource() {
+const std::vector<Layer>& Perceptron::getSource() const noexcept {
     return layers;
 }
 
-bool Perceptron::setSource(const std::vector<Layer> &layers) {
+void Perceptron::setSource(const std::vector<Layer> &layers) {
     this->layers = layers;
-    return false;
 }
 
 Neurons Perceptron::operator[](const size_t& arg) {

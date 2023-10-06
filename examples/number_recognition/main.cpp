@@ -1,14 +1,14 @@
-#include <iostream>
+#include <cmath>
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <sstream>
-#include <cmath>
 
-#include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
 
-#include <Neural/Perceptron.hpp>
 #include <Neural/Activation/Functions.hpp>
+#include <Neural/Perceptron.hpp>
 
 using namespace sf;
 using namespace std;

@@ -1,10 +1,10 @@
 #ifndef NEURALDLLMANAGER_DEPENDENTS_CHECKER_HPP
 #define NEURALDLLMANAGER_DEPENDENTS_CHECKER_HPP
 
-#include <windows.h>
+#include <stdexcept>
 #include <string>
 #include <vector>
-#include <stdexcept>
+#include <windows.h>
 
 using std::wstring;
 using std::string;
